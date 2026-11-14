@@ -1,5 +1,5 @@
 const Todo = require('../models/Todo');
-const connectDB = require('../config/db');
+const { connectDB, getDbDiagnostics } = require('../config/db');
 const mongoose = require('mongoose');
 
 // Helper to ensure database is ready
@@ -18,9 +18,11 @@ const getTodos = async (req, res) => {
   try {
     await ensureDB();
     if (!isDbReady()) {
+      const diag = getDbDiagnostics();
       return res.status(503).json({
         success: false,
-        message: 'Database connection not ready. Please add your MongoDB password in server/.env',
+        message: diag.lastError || 'Database not connected. Please check MONGO_URI in Vercel settings.',
+        diagnostics: diag,
         data: []
       });
     }
@@ -64,9 +66,11 @@ const createTodo = async (req, res) => {
 
     await ensureDB();
     if (!isDbReady()) {
+      const diag = getDbDiagnostics();
       return res.status(503).json({
         success: false,
-        message: 'Database connection not ready. Please add your MongoDB password in server/.env'
+        message: diag.lastError || 'Database not connected. Please check MONGO_URI in Vercel settings.',
+        diagnostics: diag
       });
     }
 
@@ -108,9 +112,11 @@ const updateTodo = async (req, res) => {
 
     await ensureDB();
     if (!isDbReady()) {
+      const diag = getDbDiagnostics();
       return res.status(503).json({
         success: false,
-        message: 'Database connection not ready. Please add your MongoDB password in server/.env'
+        message: diag.lastError || 'Database not connected. Please check MONGO_URI in Vercel settings.',
+        diagnostics: diag
       });
     }
 
@@ -168,9 +174,11 @@ const deleteTodo = async (req, res) => {
 
     await ensureDB();
     if (!isDbReady()) {
+      const diag = getDbDiagnostics();
       return res.status(503).json({
         success: false,
-        message: 'Database connection not ready. Please add your MongoDB password in server/.env'
+        message: diag.lastError || 'Database not connected. Please check MONGO_URI in Vercel settings.',
+        diagnostics: diag
       });
     }
 

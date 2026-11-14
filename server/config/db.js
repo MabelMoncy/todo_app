@@ -7,6 +7,7 @@ dotenv.config();
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 let cached = global.mongoose;
+let lastConnectionError = null;
 
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
@@ -15,7 +16,7 @@ if (!cached) {
 const getFormattedUri = () => {
   let uri = process.env.MONGO_URI || '';
   if (!uri) {
-    return 'mongodb://127.0.0.1:27017/todo_app';
+    return null;
   }
 
   // Ensure database name and options are present
@@ -39,20 +40,26 @@ const getFormattedUri = () => {
 };
 
 const connectDB = async () => {
-  // If already connected, return cached connection (critical for Vercel serverless)
   if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
 
+  const uri = getFormattedUri();
+  if (!uri) {
+    lastConnectionError = 'MONGO_URI environment variable is not defined in Vercel settings';
+    console.error(lastConnectionError);
+    return null;
+  }
+
   if (!cached.promise) {
-    const uri = getFormattedUri();
     const opts = {
-      serverSelectionTimeoutMS: 8000,
-      connectTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
     };
 
     cached.promise = mongoose.connect(uri, opts).then((m) => {
       console.log(`MongoDB Connected: ${m.connection.host}/${m.connection.name}`);
+      lastConnectionError = null;
       return m;
     });
   }
@@ -62,9 +69,34 @@ const connectDB = async () => {
     return cached.conn;
   } catch (error) {
     cached.promise = null;
+    lastConnectionError = error.message;
     console.error(`MongoDB Connection Error: ${error.message}`);
     return null;
   }
 };
 
-module.exports = connectDB;
+const getDbDiagnostics = () => {
+  const hasUri = Boolean(process.env.MONGO_URI);
+  let uriMasked = 'none';
+  if (hasUri) {
+    const raw = process.env.MONGO_URI;
+    const atIndex = raw.indexOf('@');
+    if (atIndex !== -1) {
+      uriMasked = raw.slice(0, 14) + '***@' + raw.slice(atIndex + 1);
+    } else {
+      uriMasked = raw.slice(0, 10) + '***';
+    }
+  }
+
+  return {
+    hasMongoUri: hasUri,
+    uriPreview: uriMasked,
+    readyState: mongoose.connection.readyState,
+    lastError: lastConnectionError,
+  };
+};
+
+module.exports = {
+  connectDB,
+  getDbDiagnostics,
+};

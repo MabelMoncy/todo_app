@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+const { connectDB, getDbDiagnostics } = require('./config/db');
 const todoRoutes = require('./routes/todoRoutes');
 
 // Load environment variables (supports root .env, server/.env, and system env vars)
@@ -123,10 +123,11 @@ app.use('/api/todos', todoRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+  const diag = getDbDiagnostics();
   res.status(200).json({
     status: 'OK',
     uptime: process.uptime(),
-    dbState: require('mongoose').connection.readyState,
+    db: diag,
   });
 });
 
