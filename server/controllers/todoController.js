@@ -9,12 +9,22 @@ const ensureDB = async () => {
   }
 };
 
+const isDbReady = () => mongoose.connection.readyState === 1;
+
 // @desc    Get all todos
 // @route   GET /api/todos
 // @access  Public
 const getTodos = async (req, res) => {
   try {
     await ensureDB();
+    if (!isDbReady()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection not ready. Please add your MongoDB password in server/.env',
+        data: []
+      });
+    }
+
     const todos = await Todo.find().sort({ createdAt: -1 }).lean();
     return res.status(200).json({
       success: true,
@@ -53,6 +63,13 @@ const createTodo = async (req, res) => {
     }
 
     await ensureDB();
+    if (!isDbReady()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection not ready. Please add your MongoDB password in server/.env'
+      });
+    }
+
     const newTodo = await Todo.create({
       title: title.trim(),
       description: description ? description.trim() : '',
@@ -90,6 +107,13 @@ const updateTodo = async (req, res) => {
     }
 
     await ensureDB();
+    if (!isDbReady()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection not ready. Please add your MongoDB password in server/.env'
+      });
+    }
+
     const todo = await Todo.findById(id);
 
     if (!todo) {
@@ -143,6 +167,13 @@ const deleteTodo = async (req, res) => {
     }
 
     await ensureDB();
+    if (!isDbReady()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection not ready. Please add your MongoDB password in server/.env'
+      });
+    }
+
     const todo = await Todo.findById(id);
 
     if (!todo) {
