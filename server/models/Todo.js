@@ -11,7 +11,8 @@ const todoSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
-      default: ''
+      default: '',
+      maxlength: [1000, 'Description cannot exceed 1000 characters']
     },
     completed: {
       type: Boolean,
@@ -23,4 +24,7 @@ const todoSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('Todo', todoSchema);
+// Optimize query performance for listings sorted by createdAt
+todoSchema.index({ createdAt: -1 });
+
+module.exports = mongoose.models.Todo || mongoose.model('Todo', todoSchema);

@@ -113,3 +113,4 @@ export default function EditModal({ todo, isOpen, onClose, onSave }) {
     </div>
   );
 }
+
