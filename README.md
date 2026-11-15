@@ -7,8 +7,8 @@ A production-ready full-stack MERN (MongoDB, Express, React, Node.js) Todo appli
 ## 📋 Mandatory Assignment Submission
 
 - **Developer Name:** Mabel Anto Moncy
-- **Live Frontend URL:** `https://<your-project>.vercel.app`
-- **Live Backend Base URL:** `https://<your-project>.vercel.app`
+- **Live Frontend URL:** `https://todoapp-ten-eta.vercel.app/`
+- **Live Backend Base URL:** `https://todoapp-ten-eta.vercel.app/api/health`
 - **GitHub Repository URL:** [https://github.com/MabelMoncy/todo_app.git](https://github.com/MabelMoncy/todo_app.git)
 
 > Both frontend and backend are deployed together via Vercel. Visiting the Backend Base URL displays the full Todo App, and visiting `/name` displays `Developer Name: Mabel Anto Moncy`.
@@ -56,11 +56,6 @@ Vercel will:
 1. Build the Vite client into `client/dist`.
 2. Deploy the Express API as a high-performance Serverless Function at `/api` and `/name`.
 3. Provide your live production URL (e.g., `https://todo-app-mabel.vercel.app`).
-
-### Step 5: Verify Your Live App
-- **Todo App (Base URL):** `https://<your-app>.vercel.app/`
-- **Developer Name Endpoint:** `https://<your-app>.vercel.app/name`
-- **API Health & Database Check:** `https://<your-app>.vercel.app/api/health`
 
 ---
 
