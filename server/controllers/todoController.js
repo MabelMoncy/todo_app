@@ -9,24 +9,12 @@ const ensureDB = async () => {
   }
 };
 
-const isDbReady = () => mongoose.connection.readyState === 1;
-
 // @desc    Get all todos
 // @route   GET /api/todos
 // @access  Public
 const getTodos = async (req, res) => {
   try {
     await ensureDB();
-    if (!isDbReady()) {
-      const diag = getDbDiagnostics();
-      return res.status(503).json({
-        success: false,
-        message: diag.lastError || 'Database not connected. Please check MONGO_URI in Vercel settings.',
-        diagnostics: diag,
-        data: []
-      });
-    }
-
     const todos = await Todo.find().sort({ createdAt: -1 }).lean();
     return res.status(200).json({
       success: true,
@@ -35,10 +23,12 @@ const getTodos = async (req, res) => {
     });
   } catch (error) {
     console.error('getTodos error:', error);
+    const diag = getDbDiagnostics();
     return res.status(500).json({
       success: false,
-      message: 'Server Error: Unable to fetch todos',
-      error: error.message
+      message: error.message || 'Server Error: Unable to fetch todos',
+      diagnostics: diag,
+      data: []
     });
   }
 };
@@ -65,15 +55,6 @@ const createTodo = async (req, res) => {
     }
 
     await ensureDB();
-    if (!isDbReady()) {
-      const diag = getDbDiagnostics();
-      return res.status(503).json({
-        success: false,
-        message: diag.lastError || 'Database not connected. Please check MONGO_URI in Vercel settings.',
-        diagnostics: diag
-      });
-    }
-
     const newTodo = await Todo.create({
       title: title.trim(),
       description: description ? description.trim() : '',
@@ -87,10 +68,11 @@ const createTodo = async (req, res) => {
     });
   } catch (error) {
     console.error('createTodo error:', error);
+    const diag = getDbDiagnostics();
     return res.status(500).json({
       success: false,
-      message: 'Server Error: Unable to create todo',
-      error: error.message
+      message: error.message || 'Server Error: Unable to create todo',
+      diagnostics: diag
     });
   }
 };
@@ -111,15 +93,6 @@ const updateTodo = async (req, res) => {
     }
 
     await ensureDB();
-    if (!isDbReady()) {
-      const diag = getDbDiagnostics();
-      return res.status(503).json({
-        success: false,
-        message: diag.lastError || 'Database not connected. Please check MONGO_URI in Vercel settings.',
-        diagnostics: diag
-      });
-    }
-
     const todo = await Todo.findById(id);
 
     if (!todo) {
@@ -150,10 +123,11 @@ const updateTodo = async (req, res) => {
     });
   } catch (error) {
     console.error('updateTodo error:', error);
+    const diag = getDbDiagnostics();
     return res.status(500).json({
       success: false,
-      message: 'Server Error: Unable to update todo',
-      error: error.message
+      message: error.message || 'Server Error: Unable to update todo',
+      diagnostics: diag
     });
   }
 };
@@ -173,15 +147,6 @@ const deleteTodo = async (req, res) => {
     }
 
     await ensureDB();
-    if (!isDbReady()) {
-      const diag = getDbDiagnostics();
-      return res.status(503).json({
-        success: false,
-        message: diag.lastError || 'Database not connected. Please check MONGO_URI in Vercel settings.',
-        diagnostics: diag
-      });
-    }
-
     const todo = await Todo.findById(id);
 
     if (!todo) {
@@ -200,10 +165,11 @@ const deleteTodo = async (req, res) => {
     });
   } catch (error) {
     console.error('deleteTodo error:', error);
+    const diag = getDbDiagnostics();
     return res.status(500).json({
       success: false,
-      message: 'Server Error: Unable to delete todo',
-      error: error.message
+      message: error.message || 'Server Error: Unable to delete todo',
+      diagnostics: diag
     });
   }
 };

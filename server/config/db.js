@@ -40,6 +40,7 @@ const getFormattedUri = () => {
 };
 
 const connectDB = async () => {
+  // If already connected, return cached connection
   if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
@@ -51,16 +52,29 @@ const connectDB = async () => {
     return null;
   }
 
+  // If connection is dropped or disconnected, clear old promise
+  if (mongoose.connection.readyState === 0 || mongoose.connection.readyState === 3) {
+    cached.promise = null;
+    cached.conn = null;
+  }
+
   if (!cached.promise) {
     const opts = {
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 8000,
+      connectTimeoutMS: 10000,
+      bufferCommands: true, // Buffer operations while connecting
     };
 
     cached.promise = mongoose.connect(uri, opts).then((m) => {
       console.log(`MongoDB Connected: ${m.connection.host}/${m.connection.name}`);
       lastConnectionError = null;
+      cached.conn = m;
       return m;
+    }).catch(err => {
+      cached.promise = null;
+      cached.conn = null;
+      lastConnectionError = err.message;
+      throw err;
     });
   }
 
@@ -69,6 +83,7 @@ const connectDB = async () => {
     return cached.conn;
   } catch (error) {
     cached.promise = null;
+    cached.conn = null;
     lastConnectionError = error.message;
     console.error(`MongoDB Connection Error: ${error.message}`);
     return null;

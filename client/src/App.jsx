@@ -83,10 +83,14 @@ export default function App() {
       if (res && res.success) {
         setTodos((prev) => prev.map((t) => (t._id === id ? res.data : t)));
         showToast('Task updated successfully!');
+      } else {
+        throw new Error(res?.message || 'Failed to update task');
       }
     } catch (err) {
       console.error('Failed to update todo:', err);
-      showToast('Failed to update task', 'error');
+      const errMsg = err.response?.data?.message || err.message || 'Failed to update task';
+      showToast(errMsg, 'error');
+      throw err;
     }
   };
 

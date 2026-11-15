@@ -29,13 +29,15 @@ export default function EditModal({ todo, isOpen, onClose, onSave }) {
         completed,
       });
       onClose();
+    } catch (err) {
+      console.error('Error saving in modal:', err);
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
       <div
         className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-7 overflow-hidden text-slate-100"
         role="dialog"
@@ -44,8 +46,9 @@ export default function EditModal({ todo, isOpen, onClose, onSave }) {
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">
           <h2 className="text-lg font-semibold text-white">Edit Task</h2>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -60,7 +63,9 @@ export default function EditModal({ todo, isOpen, onClose, onSave }) {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-slate-850 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+              placeholder="Task title..."
+              style={{ backgroundColor: '#1e293b', color: '#ffffff' }}
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-inner"
               required
               maxLength={200}
             />
@@ -73,8 +78,10 @@ export default function EditModal({ todo, isOpen, onClose, onSave }) {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              placeholder="Task details or notes..."
               rows={3}
-              className="w-full bg-slate-850 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+              style={{ backgroundColor: '#1e293b', color: '#ffffff' }}
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-inner"
             />
           </div>
 
@@ -84,7 +91,7 @@ export default function EditModal({ todo, isOpen, onClose, onSave }) {
               id="edit-completed"
               checked={completed}
               onChange={(e) => setCompleted(e.target.checked)}
-              className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+              className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
             />
             <label htmlFor="edit-completed" className="text-sm text-slate-300 select-none cursor-pointer">
               Mark as completed
@@ -95,14 +102,14 @@ export default function EditModal({ todo, isOpen, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition"
+              className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!title.trim() || isSaving}
-              className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl transition shadow-lg shadow-indigo-600/20"
+              className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl transition shadow-lg shadow-indigo-600/20 active:scale-[0.98]"
             >
               <Check className="w-4 h-4" />
               <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
@@ -113,4 +120,3 @@ export default function EditModal({ todo, isOpen, onClose, onSave }) {
     </div>
   );
 }
-
