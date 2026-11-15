@@ -7,8 +7,8 @@ A production-ready full-stack MERN (MongoDB, Express, React, Node.js) Todo appli
 ## 📋 Mandatory Assignment Submission
 
 - **Developer Name:** Mabel Anto Moncy
-- **Live Frontend URL:** `https://todoapp-ten-eta.vercel.app/`
-- **Live Backend Base URL:** `https://todoapp-ten-eta.vercel.app/api/health`
+- **Live Frontend URL:** https://todoapp-ten-eta.vercel.app/
+- **Live Backend Base URL:** https://todoapp-ten-eta.vercel.app/api/health
 - **GitHub Repository URL:** [https://github.com/MabelMoncy/todo_app.git](https://github.com/MabelMoncy/todo_app.git)
 
 > Both frontend and backend are deployed together via Vercel. Visiting the Backend Base URL displays the full Todo App, and visiting `/name` displays `Developer Name: Mabel Anto Moncy`.
